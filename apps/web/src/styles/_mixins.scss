@@ -1,0 +1,18 @@
+@use "vars" as *;
+
+@mixin Tablet {
+	@media (min-width: #{$breakpoint-tablet}) {
+		@content;
+	}
+}
+
+@mixin Desktop {
+	@media (min-width: #{$breakpoint-desktop}) {
+		@content;
+	}
+}
+
+@mixin Surface {
+	background: var(--surface);
+	border: 1px solid var(--border);
+}

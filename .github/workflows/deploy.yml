@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            cd "${{ vars.DEPLOY_PATH }}"
+            git pull --ff-only
+            docker compose -f docker-compose.yml -f docker-compose.server.yml pull postgres minio api bot
+            docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --no-build postgres minio minio-init migrate api bot
+            docker image prune -f
+            docker compose -f docker-compose.yml -f docker-compose.server.yml ps
